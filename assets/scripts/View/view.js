@@ -130,13 +130,13 @@ View.prototype.bindEditTodo = function (handler) {
 }
 
 View.prototype.bindToggleTodo = function (handler) {
-    this.todoList.addEventListener('change', event => {
+    this.todoList.addEventListener('change',function (event) {
         if (event.target.type === 'checkbox') {
             const id = parseInt(event.target.parentElement.id)
 
             handler(id)
         }
-    })
+    }.bind(this))
 }
 
 export default View;
