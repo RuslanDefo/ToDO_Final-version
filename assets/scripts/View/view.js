@@ -63,6 +63,8 @@ View.prototype.displayTodos = function (todos) {
 
         todos.forEach(todo => {
             const li = this.createElement('li')
+            li.classList.add('tasks__item')
+            li.draggable = 'true'
             li.id = todo.id
 
             const checkbox = this.createElement('input')
@@ -93,7 +95,7 @@ View.prototype.displayTodos = function (todos) {
 }
 
 View.prototype._initLocalListeners = function () {
-    this.todoList.addEventListener('input',function (event) {
+    this.todoList.addEventListener('input', function (event) {
         if (event.target.className === 'editable') {
             console.log(event.target.innerText)
 
@@ -103,7 +105,7 @@ View.prototype._initLocalListeners = function () {
 }
 
 View.prototype.bindAddTodo = function (handler) {
-    this.form.addEventListener('submit',function (event) {
+    this.form.addEventListener('submit', function (event) {
         event.preventDefault()
 
         if (this.input.value !== '') {
@@ -114,19 +116,76 @@ View.prototype.bindAddTodo = function (handler) {
 }
 
 View.prototype.bindDeleteTodo = function (handler) {
-    this.todoList.addEventListener('click', function(event) {
+    this.todoList.addEventListener('click', function (event) {
         if (event.target.className === 'delete') {
-
-            let accept = confirm("Можно не делать удаление через промисы ? =)");
-            if (accept==true){
-                alert ("Тудушка удалена");
-                const id = parseInt(event.target.parentElement.id)
-                handler(id)
+            let modal = document.getElementById('modalWindow')
+            modal.classList.add('active');
+            const id = parseInt(event.target.parentElement.id)
+                return new Promise( (resolve, reject) => {
+                    let accept = document.getElementById('yes')
+                    modal.addEventListener('click', function (event){
+                        if (event.target == accept){
+                            handler(id)
+                            resolve(modal.classList.remove('active'));
+                            return;
+                        }
+                        else {
+                            reject(modal.classList.remove('active'));
+                            return;
+                        }
+                    })
+                }).catch();
             }
-            return ;
-        }
+            //         let accept = confirm("Можно не делать удаление через промисы ? =)");
+            //         if (accept==true){
+            //             alert ("Тудушка удалена");
+            //             const id = parseInt(event.target.parentElement.id)
+            //             handler(id)
+            //         }
+            //         return ;
+            //     }
+            // }.bind(this))
     }.bind(this))
 }
+
+View.prototype.dragDrop = function () {
+    this.todoList.addEventListener(`dragstart`, function (evt) {
+        evt.target.classList.add(`selected`);
+    })
+
+    this.todoList.addEventListener(`dragend`, function (evt) {
+        evt.target.classList.remove(`selected`);
+    })
+
+    this.todoList.addEventListener(`dragover`, function (evt) {
+        // Разрешаем сбрасывать элементы в эту область
+        evt.preventDefault();
+
+        // Находим перемещаемый элемент
+        const activeElement = this.todoList.querySelector(`.selected`);
+        // Находим элемент, над которым в данный момент находится курсор
+        const currentElement = evt.target;
+        // Проверяем, что событие сработало:
+        // 1. не на том элементе, который мы перемещаем,
+        // 2. именно на элементе списка
+        const isMoveable = activeElement !== currentElement &&
+            currentElement.classList.contains(`tasks__item`);
+
+        // Если нет, прерываем выполнение функции
+        if (!isMoveable) {
+            return;
+        }
+
+        // Находим элемент, перед которым будем вставлять
+        const nextElement = (currentElement === activeElement.nextElementSibling) ?
+            currentElement.nextElementSibling :
+            currentElement;
+
+        // Вставляем activeElement перед nextElement
+        this.todoList.insertBefore(activeElement, nextElement);
+    }.bind(this))
+}
+
 
 View.prototype.bindEditTodo = function (handler) {
     this.todoList.addEventListener('focusout', function (event) {
@@ -151,69 +210,68 @@ View.prototype.bindToggleTodo = function (handler) {
 }
 
 View.prototype.FiletrChecked = function () {
-  this.showCheckedButton.addEventListener('click', function (event) {
+    this.showCheckedButton.addEventListener('click', function (event) {
 
 
-let cells = document.getElementsByClassName('EEEEE');
-console.log(cells);
+        let cells = document.getElementsByClassName('EEEEE');
+        console.log(cells);
 
-for (let el = 0; el < cells.length; el++) {
-    cells[el].parentNode.classList.remove('hidden');
-  cells[el].parentNode.classList.add('prepeare');
-}
+        for (let el = 0; el < cells.length; el++) {
+            cells[el].parentNode.classList.remove('hidden');
+            cells[el].parentNode.classList.add('prepeare');
+        }
 
 
-let hide = document.getElementsByTagName('li')
-for (let el = 0; el < hide.length; el++) {
-    hide[el].classList.remove('hidden', 'active');
-  hide[el].classList.add('hidden');
-}
+        let hide = document.getElementsByTagName('li')
+        for (let el = 0; el < hide.length; el++) {
+            hide[el].classList.remove('hidden', 'active');
+            hide[el].classList.add('hidden');
+        }
 
-let show = document.getElementsByClassName('prepeare')
-for (let el = 0; el < hide.length; el++) {
-    show[el].parentNode.classList.remove('hidden');
-  show[el].parentNode.classList.add('active');
-}
+        let show = document.getElementsByClassName('prepeare')
+        for (let el = 0; el < hide.length; el++) {
+            show[el].parentNode.classList.remove('hidden');
+            show[el].parentNode.classList.add('active');
+        }
 
-  });
+    });
 }
 
 View.prototype.FiletrUnchecked = function () {
-  this.showNoCheckButton.addEventListener('click', function (event) {
-console.log(event.target);
+    this.showNoCheckButton.addEventListener('click', function (event) {
+        console.log(event.target);
 
-let cells = document.getElementsByClassName('EEEEE');
-console.log(cells);
+        let cells = document.getElementsByClassName('EEEEE');
+        console.log(cells);
 
-for (let el = 0; el < cells.length; el++) {
-    cells[el].parentNode.classList.remove('hidden');
-  cells[el].parentNode.classList.add('prepeare');
-}
+        for (let el = 0; el < cells.length; el++) {
+            cells[el].parentNode.classList.remove('hidden');
+            cells[el].parentNode.classList.add('prepeare');
+        }
 
-let hide = document.getElementsByTagName('li')
-for (let el = 0; el < hide.length; el++) {
-    hide[el].classList.remove('hidden', 'active');
-  hide[el].classList.add('active');
-}
+        let hide = document.getElementsByTagName('li')
+        for (let el = 0; el < hide.length; el++) {
+            hide[el].classList.remove('hidden', 'active');
+            hide[el].classList.add('active');
+        }
 
-let show = document.getElementsByClassName('prepeare')
-for (let el = 0; el < hide.length; el++) {
-    show[el].parentNode.classList.remove('active');
-  show[el].parentNode.classList.add('hidden');
-}
+        let show = document.getElementsByClassName('prepeare')
+        for (let el = 0; el < hide.length; el++) {
+            show[el].parentNode.classList.remove('active');
+            show[el].parentNode.classList.add('hidden');
+        }
 
 
-
-  });
+    });
 }
 
 View.prototype.FilterAll = function () {
-  this.showAllButton.addEventListener('click', function (event) {
-    let show = document.getElementsByTagName('li')
-    for (let el = 0; el < show.length; el++) {
-        show[el].classList.remove('hidden', 'active');
-    }
-})
+    this.showAllButton.addEventListener('click', function (event) {
+        let show = document.getElementsByTagName('li')
+        for (let el = 0; el < show.length; el++) {
+            show[el].classList.remove('hidden', 'active');
+        }
+    })
 };
 
 export default View;
