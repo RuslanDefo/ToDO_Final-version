@@ -5,16 +5,26 @@ function View() {
     this.app = this.getElement('#root')
     this.form = this.createElement('form')
     this.input = this.createElement('input')
+    this.panel = this.createElement('div')
     this.input.type = 'text'
     this.input.placeholder = 'Add task'
     this.input.name = 'todo'
     this.submitButton = this.createElement('button')
     this.submitButton.textContent = 'Submit'
+    this.showCheckedButton = this.createElement('button')
+    this.showCheckedButton.textContent = 'Show Checked'
+    this.showNoCheckButton = this.createElement('button')
+    this.showNoCheckButton.textContent = 'Show No Checked'
+    this.showAllButton = this.createElement('button')
+    this.showAllButton.textContent = 'Show All'
+
+
     this.form.append(this.input, this.submitButton)
+    this.panel.append(this.showCheckedButton, this.showNoCheckButton, this.showAllButton)
     this.title = this.createElement('h1')
     this.title.textContent = 'Best ToDo_List Ever'
     this.todoList = this.createElement('ul', 'todo-list')
-    this.app.append(this.title, this.form, this.todoList)
+    this.app.append(this.title, this.form, this.todoList, this.panel)
     this._temporaryTodoText = ''
     this._initLocalListeners()
     // this.input.value = 'TEST TEST TEST'
@@ -65,6 +75,7 @@ View.prototype.displayTodos = function (todos) {
 
             if (todo.complete) {
                 const strike = this.createElement('s')
+                strike.classList.add('EEEEE');
                 strike.textContent = todo.text
                 span.append(strike)
             } else {
@@ -130,7 +141,7 @@ View.prototype.bindEditTodo = function (handler) {
 }
 
 View.prototype.bindToggleTodo = function (handler) {
-    this.todoList.addEventListener('change',function (event) {
+    this.todoList.addEventListener('change', function (event) {
         if (event.target.type === 'checkbox') {
             const id = parseInt(event.target.parentElement.id)
 
@@ -138,5 +149,71 @@ View.prototype.bindToggleTodo = function (handler) {
         }
     }.bind(this))
 }
+
+View.prototype.FiletrChecked = function () {
+  this.showCheckedButton.addEventListener('click', function (event) {
+
+
+let cells = document.getElementsByClassName('EEEEE');
+console.log(cells);
+
+for (let el = 0; el < cells.length; el++) {
+    cells[el].parentNode.classList.remove('hidden');
+  cells[el].parentNode.classList.add('prepeare');
+}
+
+
+let hide = document.getElementsByTagName('li')
+for (let el = 0; el < hide.length; el++) {
+    hide[el].classList.remove('hidden', 'active');
+  hide[el].classList.add('hidden');
+}
+
+let show = document.getElementsByClassName('prepeare')
+for (let el = 0; el < hide.length; el++) {
+    show[el].parentNode.classList.remove('hidden');
+  show[el].parentNode.classList.add('active');
+}
+
+  });
+}
+
+View.prototype.FiletrUnchecked = function () {
+  this.showNoCheckButton.addEventListener('click', function (event) {
+console.log(event.target);
+
+let cells = document.getElementsByClassName('EEEEE');
+console.log(cells);
+
+for (let el = 0; el < cells.length; el++) {
+    cells[el].parentNode.classList.remove('hidden');
+  cells[el].parentNode.classList.add('prepeare');
+}
+
+let hide = document.getElementsByTagName('li')
+for (let el = 0; el < hide.length; el++) {
+    hide[el].classList.remove('hidden', 'active');
+  hide[el].classList.add('active');
+}
+
+let show = document.getElementsByClassName('prepeare')
+for (let el = 0; el < hide.length; el++) {
+    show[el].parentNode.classList.remove('active');
+  show[el].parentNode.classList.add('hidden');
+}
+
+
+
+  });
+}
+
+View.prototype.FilterAll = function () {
+  this.showAllButton.addEventListener('click', function (event) {
+    let show = document.getElementsByTagName('li')
+    for (let el = 0; el < show.length; el++) {
+        show[el].classList.remove('hidden', 'active');
+    }
+})
+};
 
 export default View;
