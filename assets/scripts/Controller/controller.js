@@ -14,7 +14,7 @@ function Controller (model, view) {
     this.view.bindEditTodo(this.handleEditTodo.bind(this))
     this.view.bindDeleteTodo(this.handleDeleteTodo.bind(this))
     this.view.bindToggleTodo(this.handleToggleTodo.bind(this))
-    this.view.dragDrop(this.handleToggleTodo.bind(this))
+    this.view.dragDrop(this.onTodoListChanged.bind(this))
     this.view.FiletrChecked(this.handleToggleTodo.bind(this))
     this.view.FiletrUnchecked(this.handleToggleTodo.bind(this))
     this.view.FilterAll(this.handleToggleTodo.bind(this))

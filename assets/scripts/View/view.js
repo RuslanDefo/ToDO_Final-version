@@ -158,7 +158,7 @@ View.prototype.dragDrop = function () {
     })
 
     this.todoList.addEventListener(`dragover`, function (evt) {
-       
+
         evt.preventDefault();
 
 
