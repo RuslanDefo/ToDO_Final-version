@@ -158,30 +158,26 @@ View.prototype.dragDrop = function () {
     })
 
     this.todoList.addEventListener(`dragover`, function (evt) {
-        // Разрешаем сбрасывать элементы в эту область
+       
         evt.preventDefault();
 
-        // Находим перемещаемый элемент
+
         const activeElement = this.todoList.querySelector(`.selected`);
-        // Находим элемент, над которым в данный момент находится курсор
+
         const currentElement = evt.target;
-        // Проверяем, что событие сработало:
-        // 1. не на том элементе, который мы перемещаем,
-        // 2. именно на элементе списка
+
         const isMoveable = activeElement !== currentElement &&
             currentElement.classList.contains(`tasks__item`);
 
-        // Если нет, прерываем выполнение функции
+
         if (!isMoveable) {
             return;
         }
 
-        // Находим элемент, перед которым будем вставлять
         const nextElement = (currentElement === activeElement.nextElementSibling) ?
             currentElement.nextElementSibling :
             currentElement;
 
-        // Вставляем activeElement перед nextElement
         this.todoList.insertBefore(activeElement, nextElement);
     }.bind(this))
 }
