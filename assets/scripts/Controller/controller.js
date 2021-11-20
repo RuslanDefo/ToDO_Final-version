@@ -9,6 +9,7 @@ function Controller (model, view) {
 
     console.log(this)
 
+
     this.model.bindTodoListChanged(this.onTodoListChanged.bind(this))
     this.view.bindAddTodo(this.handleAddTodo.bind(this))
     this.view.bindEditTodo(this.handleEditTodo.bind(this))

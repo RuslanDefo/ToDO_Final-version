@@ -66,6 +66,7 @@ View.prototype.displayTodos = function (todos) {
             li.classList.add('tasks__item')
             li.draggable = 'true'
             li.id = todo.id
+            li.order = todo.order
 
             const checkbox = this.createElement('input')
             checkbox.type = 'checkbox'
@@ -116,37 +117,40 @@ View.prototype.bindAddTodo = function (handler) {
 }
 
 View.prototype.bindDeleteTodo = function (handler) {
-    this.todoList.addEventListener('click', function (event) {
+    this.todoList.addEventListener('click', function(event) {
+        const id = parseInt(event.target.parentElement.id)
         if (event.target.className === 'delete') {
-            let modal = document.getElementById('modalWindow')
-            modal.classList.add('active');
-            const id = parseInt(event.target.parentElement.id)
-                return new Promise( (resolve, reject) => {
-                    let accept = document.getElementById('yes')
-                    modal.addEventListener('click', function (event){
-                        if (event.target == accept){
-                            handler(id)
-                            resolve(modal.classList.remove('active'));
-                            return;
-                        }
-                        else {
-                            reject(modal.classList.remove('active'));
-                            return;
-                        }
-                    })
-                }).catch();
-            }
-            //         let accept = confirm("Можно не делать удаление через промисы ? =)");
-            //         if (accept==true){
-            //             alert ("Тудушка удалена");
-            //             const id = parseInt(event.target.parentElement.id)
-            //             handler(id)
-            //         }
-            //         return ;
-            //     }
-            // }.bind(this))
-    }.bind(this))
-}
+            return new Promise(resolve => {
+
+                let modal = document.createElement('div')
+                let yesBtn = document.createElement('button')
+                modal.classList.add('modalWindow')
+                yesBtn.textContent = 'Yes'
+                yesBtn.id = 'yes'
+                let noBtn = document.createElement('button')
+                noBtn.textContent = 'No'
+                noBtn.id = 'no'
+                let modalText = document.createElement('h3')
+                modalText.textContent = 'Удалить запись?'
+                document.body.append(modal)
+                modal.append(modalText, yesBtn, noBtn)
+
+                yesBtn.addEventListener('click', function(event){
+                    console.log('yesBtn');
+                    resolve(handler(id))
+                    console.log('Выведи это');
+                    modal.remove();
+                })
+
+                noBtn.addEventListener('click', function(event){
+                    console.log('noBtn');
+                    resolve(console.error('canceled'))
+                    modal.remove();
+                })
+
+            })
+        }
+    })}
 
 View.prototype.dragDrop = function () {
     this.todoList.addEventListener(`dragstart`, function (evt) {
