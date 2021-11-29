@@ -4,10 +4,10 @@ function Model() {
     this.todos = JSON.parse(localStorage.getItem('todos')) || [];
 
 
-
-    let sortByOrder = (a, b) => a.order > b.order ? 1 : -1;
-    this.todos.sort(sortByOrder);
-    console.log(this.todos);
+    console.log(this.todos)
+    // let sortByOrder = (a, b) => a.order > b.order ? 1 : -1;
+    // this.todos.sort(sortByOrder);
+    // console.log(this.todos);
 
 };
 
@@ -25,7 +25,7 @@ Model.prototype.addTodo = function (todoText) {
         id: this.todos.length > 0 ? this.todos[this.todos.length - 1].id + 1 : 1,
         text: todoText,
         complete: false,
-        order: this.todos.length > 0 ? this.todos[this.todos.length - 1].id + 1 : 1
+        // order: this.todos.length > 0 ? this.todos[this.todos.length - 1].id + 1 : 1
     };
 
 
@@ -39,6 +39,26 @@ Model.prototype.editTodo = function (id, updatedText) {
             return   todo.id === id ? {id: todo.id, text: updatedText, complete: todo.complete, order: todo.order} : todo
         }
     )
+
+    this._commit(this.todos)
+};
+
+Model.prototype.refreshDrag = function (id, newPos) {
+    function getCurPos(id, arr) {
+        let i = 0;
+        for (let elem of arr) {
+            if (elem.id == id) {
+                return i;
+            }
+
+            i++;
+        }
+    }
+
+    let curPos = getCurPos(id, this.todos);
+
+    let movedElem = this.todos.splice(curPos, 1)[0];
+    this.todos.splice(newPos, 0, movedElem);
 
     this._commit(this.todos)
 };

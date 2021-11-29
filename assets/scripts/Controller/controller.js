@@ -15,7 +15,7 @@ function Controller (model, view) {
     this.view.bindEditTodo(this.handleEditTodo.bind(this))
     this.view.bindDeleteTodo(this.handleDeleteTodo.bind(this))
     this.view.bindToggleTodo(this.handleToggleTodo.bind(this))
-    this.view.dragDrop(this.onTodoListChanged.bind(this))
+    this.view.dragDrop(this.handleDrag.bind(this))
     this.view.FiletrChecked(this.handleToggleTodo.bind(this))
     this.view.FiletrUnchecked(this.handleToggleTodo.bind(this))
     this.view.FilterAll(this.handleToggleTodo.bind(this))
@@ -28,9 +28,14 @@ Controller.prototype.onTodoListChanged = function (todos) {
     return   this.view.displayTodos(todos)
 }
 
-Controller.prototype.handleAddTodo = function (todoText) {
+Controller.prototype.handleAddTodo = function (id, todoText) {
     console.log()
-    this.model.addTodo(todoText)
+    this.model.addTodo(id, todoText)
+}
+
+Controller.prototype.handleDrag = function (id, pos) {
+    console.log(id, pos)
+    this.model.refreshDrag(id, pos)
 }
 
 Controller.prototype.handleEditTodo = function (id, todoText) {

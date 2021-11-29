@@ -152,39 +152,127 @@ View.prototype.bindDeleteTodo = function (handler) {
         }
     })}
 
-View.prototype.dragDrop = function () {
-    this.todoList.addEventListener(`dragstart`, function (evt) {
-        evt.target.classList.add(`selected`);
-    })
-
-    this.todoList.addEventListener(`dragend`, function (evt) {
-        evt.target.classList.remove(`selected`);
-    })
-
-    this.todoList.addEventListener(`dragover`, function (evt) {
-
-        evt.preventDefault();
+View.prototype.dragDrop = function (handler) {
 
 
-        const activeElement = this.todoList.querySelector(`.selected`);
+        this.todoList.addEventListener(`dragstart`, function (evt) {
+            evt.target.classList.add(`selected`);
 
-        const currentElement = evt.target;
+        })
 
-        const isMoveable = activeElement !== currentElement &&
-            currentElement.classList.contains(`tasks__item`);
+        this.todoList.addEventListener(`dragend`, function (evt) {
+            evt.target.classList.remove(`selected`)
+             handler(evt.target.id, getPos(evt.target));
+        })
 
+        function getPos(elem) {
+            let parent = elem.parentNode;
 
-        if (!isMoveable) {
-            return;
+            let i = 0;
+            for (let child of parent.children) {
+                if (child === elem) {
+                    return i;
+                }
+
+                i++;
+            }
         }
 
-        const nextElement = (currentElement === activeElement.nextElementSibling) ?
-            currentElement.nextElementSibling :
-            currentElement;
+        this.todoList.addEventListener(`dragover`, function (evt) {
 
-        this.todoList.insertBefore(activeElement, nextElement);
-    }.bind(this))
+            evt.preventDefault();
+
+
+            const activeElement = this.todoList.querySelector(`.selected`);
+
+            const currentElement = evt.target;
+
+           // console.log(activeElement)
+
+
+
+            const isMoveable = activeElement !== currentElement &&
+                currentElement.classList.contains(`tasks__item`);
+
+
+            if (!isMoveable) {
+                return;
+            }
+
+            const nextElement = (currentElement === activeElement.nextElementSibling) ?
+                currentElement.nextElementSibling :
+                currentElement;
+
+            this.todoList.insertBefore(activeElement, nextElement);
+
+            let tesr = JSON.parse(localStorage.getItem('todos'));
+
+        }.bind(this))
+
 }
+
+// View.prototype.dragDrop = function () {
+//     function bindFunc(event, id, func) {
+//
+//
+//             // let element = document.getElementById(id);
+//          this.todoList.addEventListener(event, func, false);
+//
+//
+//     }
+//
+//     bindFunc('dragstart', 'productList', dragging);
+//     bindFunc('dragover', 'dropZone', enterDropZone);
+//     bindFunc('dragleave', 'dropZone', leaveDropZone);
+//     bindFunc('dragover', 'dropZone', preventDefault);
+//     bindFunc('drop', 'dropZone', dropItem);
+//
+// // To set data to dataTransfer when start dragging
+//     function dragging(e) {
+//         let val = e.target.getAttribute('order');
+//         e.dataTransfer.setData('text', val);
+//         e.dataTransfer.effectAllowed = 'copy';
+//     }
+// // To add class when enter drop zone
+//     function enterDropZone(e) {
+//         let element = document.getElementById('dropZone');
+//         element.classList.add('dropZoneOver');
+//         e.preventDefault();
+//     }
+// // To remove class when leave drop zone
+//     function leaveDropZone(e) {
+//         let element = document.getElementById('dropZone');
+//         element.classList.remove('dropZoneOver');
+//         e.preventDefault();
+//     }
+// // To prevent default
+//     function preventDefault(e) {
+//         e.preventDefault();
+//     }
+// // Define global localstorage variabe
+//     if (localStorage.getItem('item') === null) {
+//         let item = [];
+//     } else {
+//         let item = JSON.parse(localStorage.getItem('item'));
+//     }
+// // To grab droped item and insert into localstorage
+//     function dropItem(e) {
+//         e.preventDefault();
+//         let element = document.getElementById('dropZone');
+//         element.classList.remove('dropZoneOver');
+//
+//         let data = e.dataTransfer.getData('text');
+//
+//         if (localStorage.getItem('item') === null) {
+//             item.push(data);
+//             localStorage.setItem('item', JSON.stringify(item));
+//         } else {
+//             item.push(data);
+//             localStorage.setItem('item', JSON.stringify(item));
+//         }
+//         // showProduct(item);
+//     }
+// }
 
 
 View.prototype.bindEditTodo = function (handler) {
