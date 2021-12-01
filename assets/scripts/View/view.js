@@ -203,9 +203,9 @@ View.prototype.dragDrop = function (handler) {
                 currentElement.nextElementSibling :
                 currentElement;
 
-            this.todoList.insertBefore(activeElement, nextElement);
-
-            let tesr = JSON.parse(localStorage.getItem('todos'));
+             this.todoList.insertBefore(activeElement, nextElement);
+            //
+            // let tesr = JSON.parse(localStorage.getItem('todos'));
 
         }.bind(this))
 

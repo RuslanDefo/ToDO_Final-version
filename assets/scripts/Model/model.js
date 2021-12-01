@@ -21,13 +21,19 @@ Model.prototype._commit = function (todos) {
 };
 
 Model.prototype.addTodo = function (todoText) {
+   // Version 2 let inc = Math.random();
+    let gen = Date.now()
+
     const todo = {
-        id: this.todos.length > 0 ? this.todos[this.todos.length - 1].id + 1 : 1,
+   /*   old Version */ // id: this.todos.length > 0 ? this.todos[this.todos.length - 1].id + 1 : 1,
+        id: this.todos.length > 0 ? this.todos[this.todos.length - 1].id + gen : 1,
         text: todoText,
         complete: false,
         // order: this.todos.length > 0 ? this.todos[this.todos.length - 1].id + 1 : 1
     };
 
+    let a = this.todos.length;
+    console.log(a);
 
     this.todos.push(todo);
 
