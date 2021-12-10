@@ -109,3 +109,10 @@ li.hidden {
     width: 100%;
     max-width: fit-content;
 }
+
+.navPanel {
+    margin: 0 auto;
+    width: 500px;
+    display: flex;
+    justify-content: space-between;
+}

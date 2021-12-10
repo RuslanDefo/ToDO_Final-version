@@ -1,5 +1,6 @@
 //VIEW
 
+
 function View() {
 
     this.app = this.getElement('#root')
@@ -19,15 +20,38 @@ function View() {
     this.showAllButton.textContent = 'Show All'
 
 
+    // Radio Buttons
+    // this.checkRadio = this.createElement('input')
+    // this.checkRadio.type = 'radio'
+    // this.checkRadio.textContent = 'showChecked'
+    // this.checkRadio.name = 'Filter_Status'
+    // this.checkRadio.value = 'complete'
+    //
+    // this.checkRadioNoCheck = this.createElement('input')
+    // this.checkRadioNoCheck.type = 'radio'
+    // this.checkRadioNoCheck.textContent = 'showChecked'
+    // this.checkRadioNoCheck.name = 'Filter_Status'
+    // this.checkRadioNoCheck.value = 'notComplete'
+    //
+    // this.checkRadioAll = this.createElement('input')
+    // this.checkRadioAll.type = 'radio'
+    // this.checkRadioAll.textContent = 'showChecked'
+    // this.checkRadioAll.name = 'Filter_Status'
+    // this.checkRadioAll.value = 'all'
+
+
     this.form.append(this.input, this.submitButton)
-    this.panel.append(this.showCheckedButton, this.showNoCheckButton, this.showAllButton)
+    this.panel.append(this.showCheckedButton, this.showNoCheckButton, this.showAllButton /* this.checkRadio, this.checkRadioAll, this.checkRadioNoCheck */)
     this.title = this.createElement('h1')
     this.title.textContent = 'Best ToDo_List Ever'
     this.todoList = this.createElement('ul', 'todo-list')
     this.app.append(this.title, this.form, this.todoList, this.panel)
     this._temporaryTodoText = ''
-    this._initLocalListeners()
     // this.input.value = 'TEST TEST TEST'
+    this.RenderStatus = 'all';
+
+
+    this._initLocalListeners()
 
 }
 
@@ -51,15 +75,20 @@ View.prototype.getElement = function (selector) {
 
 View.prototype.displayTodos = function (todos) {
 
+
     while (this.todoList.firstChild) {
         this.todoList.removeChild(this.todoList.firstChild)
     }
+
+    console.log(todos)
 
     if (todos.length === 0) {
         const p = this.createElement('p')
         p.textContent = 'Может добавим задачу?'
         this.todoList.append(p)
-    } else {
+    }
+
+    if (this.RenderStatus === 'all') {
 
         todos.forEach(todo => {
             const li = this.createElement('li')
@@ -78,7 +107,6 @@ View.prototype.displayTodos = function (todos) {
 
             if (todo.complete) {
                 const strike = this.createElement('s')
-                strike.classList.add('EEEEE');
                 strike.textContent = todo.text
                 span.append(strike)
             } else {
@@ -90,6 +118,78 @@ View.prototype.displayTodos = function (todos) {
             li.append(checkbox, span, deleteButton)
 
             this.todoList.append(li)
+        })
+    }
+
+    if (this.RenderStatus === 'complete') {
+
+        todos.forEach(todo => {
+            if (todo.complete === true) {
+
+                const li = this.createElement('li')
+                li.classList.add('tasks__item')
+                li.draggable = 'true'
+                li.id = todo.id
+                li.order = todo.order
+
+                const checkbox = this.createElement('input')
+                checkbox.type = 'checkbox'
+                checkbox.checked = todo.complete
+
+                const span = this.createElement('span')
+                span.contentEditable = true
+                span.classList.add('editable')
+
+                if (todo.complete) {
+                    const strike = this.createElement('s')
+                    strike.textContent = todo.text
+                    span.append(strike)
+                } else {
+                    span.textContent = todo.text
+                }
+
+                const deleteButton = this.createElement('button', 'delete')
+                deleteButton.textContent = 'Delete'
+                li.append(checkbox, span, deleteButton)
+
+                this.todoList.append(li)
+            }
+        })
+    }
+
+    if (this.RenderStatus === 'notComplete') {
+
+        todos.forEach(todo => {
+            if (todo.complete === false) {
+
+                const li = this.createElement('li')
+                li.classList.add('tasks__item')
+                li.draggable = 'true'
+                li.id = todo.id
+                li.order = todo.order
+
+                const checkbox = this.createElement('input')
+                checkbox.type = 'checkbox'
+                checkbox.checked = todo.complete
+
+                const span = this.createElement('span')
+                span.contentEditable = true
+                span.classList.add('editable')
+
+                if (todo.complete) {
+                    const strike = this.createElement('s')
+                    strike.textContent = todo.text
+                    span.append(strike)
+                } else {
+                    span.textContent = todo.text
+                }
+
+                const deleteButton = this.createElement('button', 'delete')
+                deleteButton.textContent = 'Delete'
+                li.append(checkbox, span, deleteButton)
+
+                this.todoList.append(li)
+            }
         })
     }
 
@@ -117,7 +217,7 @@ View.prototype.bindAddTodo = function (handler) {
 }
 
 View.prototype.bindDeleteTodo = function (handler) {
-    this.todoList.addEventListener('click', function(event) {
+    this.todoList.addEventListener('click', function (event) {
         const id = parseInt(event.target.parentElement.id)
         if (event.target.className === 'delete') {
             return new Promise(resolve => {
@@ -135,14 +235,14 @@ View.prototype.bindDeleteTodo = function (handler) {
                 document.body.append(modal)
                 modal.append(modalText, yesBtn, noBtn)
 
-                yesBtn.addEventListener('click', function(event){
+                yesBtn.addEventListener('click', function (event) {
                     console.log('yesBtn');
                     resolve(handler(id))
                     console.log('Выведи это');
                     modal.remove();
                 })
 
-                noBtn.addEventListener('click', function(event){
+                noBtn.addEventListener('click', function (event) {
                     console.log('noBtn');
                     resolve(console.error('canceled'))
                     modal.remove();
@@ -150,130 +250,66 @@ View.prototype.bindDeleteTodo = function (handler) {
 
             })
         }
-    })}
+    })
+}
 
 View.prototype.dragDrop = function (handler) {
 
 
-        this.todoList.addEventListener(`dragstart`, function (evt) {
-            evt.target.classList.add(`selected`);
+    this.todoList.addEventListener(`dragstart`, function (evt) {
+        evt.target.classList.add(`selected`);
 
-        })
+    })
 
-        this.todoList.addEventListener(`dragend`, function (evt) {
-            evt.target.classList.remove(`selected`)
-             handler(evt.target.id, getPos(evt.target));
-        })
+    this.todoList.addEventListener(`dragend`, function (evt) {
+        evt.target.classList.remove(`selected`)
+        handler(evt.target.id, getPos(evt.target));
+    })
 
-        function getPos(elem) {
-            let parent = elem.parentNode;
+    function getPos(elem) {
+        let parent = elem.parentNode;
 
-            let i = 0;
-            for (let child of parent.children) {
-                if (child === elem) {
-                    return i;
-                }
-
-                i++;
+        let i = 0;
+        for (let child of parent.children) {
+            if (child === elem) {
+                return i;
             }
+
+            i++;
+        }
+    }
+
+    this.todoList.addEventListener(`dragover`, function (evt) {
+
+        evt.preventDefault();
+
+
+        const activeElement = this.todoList.querySelector(`.selected`);
+
+        const currentElement = evt.target;
+
+        // console.log(activeElement)
+
+
+        const isMoveable = activeElement !== currentElement &&
+            currentElement.classList.contains(`tasks__item`);
+
+
+        if (!isMoveable) {
+            return;
         }
 
-        this.todoList.addEventListener(`dragover`, function (evt) {
+        const nextElement = (currentElement === activeElement.nextElementSibling) ?
+            currentElement.nextElementSibling :
+            currentElement;
 
-            evt.preventDefault();
+        this.todoList.insertBefore(activeElement, nextElement);
+        //
+        // let tesr = JSON.parse(localStorage.getItem('todos'));
 
-
-            const activeElement = this.todoList.querySelector(`.selected`);
-
-            const currentElement = evt.target;
-
-           // console.log(activeElement)
-
-
-
-            const isMoveable = activeElement !== currentElement &&
-                currentElement.classList.contains(`tasks__item`);
-
-
-            if (!isMoveable) {
-                return;
-            }
-
-            const nextElement = (currentElement === activeElement.nextElementSibling) ?
-                currentElement.nextElementSibling :
-                currentElement;
-
-             this.todoList.insertBefore(activeElement, nextElement);
-            //
-            // let tesr = JSON.parse(localStorage.getItem('todos'));
-
-        }.bind(this))
+    }.bind(this))
 
 }
-
-// View.prototype.dragDrop = function () {
-//     function bindFunc(event, id, func) {
-//
-//
-//             // let element = document.getElementById(id);
-//          this.todoList.addEventListener(event, func, false);
-//
-//
-//     }
-//
-//     bindFunc('dragstart', 'productList', dragging);
-//     bindFunc('dragover', 'dropZone', enterDropZone);
-//     bindFunc('dragleave', 'dropZone', leaveDropZone);
-//     bindFunc('dragover', 'dropZone', preventDefault);
-//     bindFunc('drop', 'dropZone', dropItem);
-//
-// // To set data to dataTransfer when start dragging
-//     function dragging(e) {
-//         let val = e.target.getAttribute('order');
-//         e.dataTransfer.setData('text', val);
-//         e.dataTransfer.effectAllowed = 'copy';
-//     }
-// // To add class when enter drop zone
-//     function enterDropZone(e) {
-//         let element = document.getElementById('dropZone');
-//         element.classList.add('dropZoneOver');
-//         e.preventDefault();
-//     }
-// // To remove class when leave drop zone
-//     function leaveDropZone(e) {
-//         let element = document.getElementById('dropZone');
-//         element.classList.remove('dropZoneOver');
-//         e.preventDefault();
-//     }
-// // To prevent default
-//     function preventDefault(e) {
-//         e.preventDefault();
-//     }
-// // Define global localstorage variabe
-//     if (localStorage.getItem('item') === null) {
-//         let item = [];
-//     } else {
-//         let item = JSON.parse(localStorage.getItem('item'));
-//     }
-// // To grab droped item and insert into localstorage
-//     function dropItem(e) {
-//         e.preventDefault();
-//         let element = document.getElementById('dropZone');
-//         element.classList.remove('dropZoneOver');
-//
-//         let data = e.dataTransfer.getData('text');
-//
-//         if (localStorage.getItem('item') === null) {
-//             item.push(data);
-//             localStorage.setItem('item', JSON.stringify(item));
-//         } else {
-//             item.push(data);
-//             localStorage.setItem('item', JSON.stringify(item));
-//         }
-//         // showProduct(item);
-//     }
-// }
-
 
 View.prototype.bindEditTodo = function (handler) {
     this.todoList.addEventListener('focusout', function (event) {
@@ -297,69 +333,18 @@ View.prototype.bindToggleTodo = function (handler) {
     }.bind(this))
 }
 
-View.prototype.FiletrChecked = function () {
-    this.showCheckedButton.addEventListener('click', function (event) {
 
-
-        let cells = document.getElementsByClassName('EEEEE');
-        console.log(cells);
-
-        for (let el = 0; el < cells.length; el++) {
-            cells[el].parentNode.classList.remove('hidden');
-            cells[el].parentNode.classList.add('prepeare');
-        }
-
-
-        let hide = document.getElementsByTagName('li')
-        for (let el = 0; el < hide.length; el++) {
-            hide[el].classList.remove('hidden', 'active');
-            hide[el].classList.add('hidden');
-        }
-
-        let show = document.getElementsByClassName('prepeare')
-        for (let el = 0; el < hide.length; el++) {
-            show[el].parentNode.classList.remove('hidden');
-            show[el].parentNode.classList.add('active');
-        }
-
-    });
+View.prototype.filterTasks = function (handler) {
+    let checkers = document.getElementsByName('Filter_Status')
+    console.log(checkers.length)
+    for (let i = 0; i < checkers.length; i++) {
+        checkers[i].addEventListener('click', function (event) {
+            this.RenderStatus = event.target.value;
+            handler(this.RenderStatus,);
+            console.log(event.target.value)
+        }.bind(this))
+    }
 }
 
-View.prototype.FiletrUnchecked = function () {
-    this.showNoCheckButton.addEventListener('click', function (event) {
-        console.log(event.target);
-
-        let cells = document.getElementsByClassName('EEEEE');
-        console.log(cells);
-
-        for (let el = 0; el < cells.length; el++) {
-            cells[el].parentNode.classList.remove('hidden');
-            cells[el].parentNode.classList.add('prepeare');
-        }
-
-        let hide = document.getElementsByTagName('li')
-        for (let el = 0; el < hide.length; el++) {
-            hide[el].classList.remove('hidden', 'active');
-            hide[el].classList.add('active');
-        }
-
-        let show = document.getElementsByClassName('prepeare')
-        for (let el = 0; el < hide.length; el++) {
-            show[el].parentNode.classList.remove('active');
-            show[el].parentNode.classList.add('hidden');
-        }
-
-
-    });
-}
-
-View.prototype.FilterAll = function () {
-    this.showAllButton.addEventListener('click', function (event) {
-        let show = document.getElementsByTagName('li')
-        for (let el = 0; el < show.length; el++) {
-            show[el].classList.remove('hidden', 'active');
-        }
-    })
-};
 
 export default View;

@@ -1,13 +1,10 @@
 // MODEL
+// let Filter = 'all';
+
+
 function Model() {
 
-    this.todos = JSON.parse(localStorage.getItem('todos')) || [];
-
-
-    console.log(this.todos)
-    // let sortByOrder = (a, b) => a.order > b.order ? 1 : -1;
-    // this.todos.sort(sortByOrder);
-    // console.log(this.todos);
+        this.todos = JSON.parse(localStorage.getItem('todos')) || [];
 
 };
 
@@ -17,7 +14,13 @@ Model.prototype.bindTodoListChanged = function (callback) {
 
 Model.prototype._commit = function (todos) {
     this.onTodoListChanged(todos)
+
     localStorage.setItem('todos', JSON.stringify(todos))
+};
+
+ Model.prototype.SaveRendStatus = function (status) {
+         localStorage.setItem('RenderStatus', status);
+     this._commit(this.todos);
 };
 
 Model.prototype.addTodo = function (todoText) {
@@ -83,5 +86,8 @@ Model.prototype.toggleTodo = function (id) {
 
     this._commit(this.todos)
 };
+
+
+
 
 export default Model;
